@@ -144,6 +144,26 @@ int main( )
 	cvtColor( finalImage, grayImage, CV_BGR2GRAY );//转换为灰度图
 
 	cout<<grayImage.rows<<"  "<<grayImage.cols<<endl;
+	equalizeHist( grayImage, grayImage );//灰度图均衡化
+
+	//【3】进行局部二值化
+	int blockSize = (grayImage.cols+grayImage.rows)*0.5*0.05;//阈值计算窗口边长，必须为奇数
+	if (blockSize%2==0){blockSize++;}
+		//cout<<"blockSize:"<<blockSize<<endl;
+	adaptiveThreshold(grayImage,grayImage,255,CV_ADAPTIVE_THRESH_MEAN_C,CV_THRESH_BINARY_INV, blockSize, 20);
+	/*
+	参数5
+	For the method ADAPTIVE_THRESH_MEAN_C , the threshold value T(x,y) is a mean of the neighborhood of (x, y) minus C .
+	For the method ADAPTIVE_THRESH_GAUSSIAN_C , the threshold value T(x, y) is a weighted sum (cross-correlation with a 
+	Gaussian window) of the neighborhood of (x, y) minus C . The default sigma (standard deviation) is used for the specified blockSize . 
+	*/
+	//【4】进行中值滤波（去除椒盐噪声）
+	int ksize = (grayImage.cols+grayImage.rows)*0.5/800;//滤波窗口边长，必须为奇数
+	if (ksize%2==0){ksize++;}
+	if (ksize<3){ksize = 3;}
+	if (ksize>7){ksize = 7;}
+		//cout<<"ksize:"<<ksize<<endl;
+	medianBlur(grayImage,grayImage,5);
 	//for(int i=0;i<finalImage.cols;i++)
 	//	cout<<(int)finalImage.at<cv::Vec3b>(2335,i)[1]<<" ";
 	//cout<<endl<<"END";
@@ -177,32 +197,32 @@ int main( )
 	//imshow("【旋转前效果图】", midImage);  
 
 	namedWindow("img",WINDOW_NORMAL);//显示最终效果图
-	setMouseCallback("img",on_mouse,0); 
-	 
+	//setMouseCallback("img",on_mouse,0); 
+	imshow("img", grayImage);  
 
 	waitKey(0);  
-	//mPoint.push_back(Point(2045,1439)) ;
-	//mPoint.push_back(Point(3206,1492));
-	//首先在图像中鼠标两点选择区域，再按任意键开始计算。
-	VerProject verPro=VerProject(mPoint[0],mPoint[1],grayImage);	//文字投影类
-	xpos=verPro.findPosition();		//提取文字位置
-	for (int i=0;i<xpos.size();i++)
-	{
-		line( grayImage , Point( xpos[i],mPoint[0].y ) , Point( xpos[i], mPoint[1].y ) , cvScalar( 255 , 0 , 0 ,0 ) , 3 , 8  ,0 );  
-		 
-	}
+	////mPoint.push_back(Point(2045,1439)) ;
+	////mPoint.push_back(Point(3206,1492));
+	////首先在图像中鼠标两点选择区域，再按任意键开始计算。
+	//VerProject verPro=VerProject(mPoint[0],mPoint[1],grayImage);	//文字投影类
+	//xpos=verPro.findPosition();		//提取文字位置
+	//for (int i=0;i<xpos.size();i++)
+	//{
+	//	line( grayImage , Point( xpos[i],mPoint[0].y ) , Point( xpos[i], mPoint[1].y ) , cvScalar( 255 , 0 , 0 ,0 ) , 3 , 8  ,0 );  
+	//	 
+	//}
 
-	/*for(int i=mPoint[0].y;i<mPoint[1].y;i++) {
-		double sump=0;
-		int numj=0;
-		for(int j=mPoint[0].x;j<mPoint[1].x;j++) {
-			sump+=grayImage.at<uchar>(i,j);
-			numj++;
-		}
-		sump/=numj;
-		cout<<sump<<"		";
-	}*/
-	imshow("img", grayImage); 
-	waitKey(0); 
+	///*for(int i=mPoint[0].y;i<mPoint[1].y;i++) {
+	//	double sump=0;
+	//	int numj=0;
+	//	for(int j=mPoint[0].x;j<mPoint[1].x;j++) {
+	//		sump+=grayImage.at<uchar>(i,j);
+	//		numj++;
+	//	}
+	//	sump/=numj;
+	//	cout<<sump<<"		";
+	//}*/
+	//imshow("img", grayImage); 
+	//waitKey(0); 
 	return 0;  
 }
