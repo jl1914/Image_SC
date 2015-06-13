@@ -150,7 +150,7 @@ int main( )
 	int blockSize = (grayImage.cols+grayImage.rows)*0.5*0.05;//阈值计算窗口边长，必须为奇数
 	if (blockSize%2==0){blockSize++;}
 		//cout<<"blockSize:"<<blockSize<<endl;
-	adaptiveThreshold(grayImage,grayImage,255,CV_ADAPTIVE_THRESH_MEAN_C,CV_THRESH_BINARY_INV, blockSize, 20);
+	adaptiveThreshold(grayImage,grayImage,255,CV_ADAPTIVE_THRESH_MEAN_C,CV_THRESH_BINARY, blockSize, 20);
 	/*
 	参数5
 	For the method ADAPTIVE_THRESH_MEAN_C , the threshold value T(x,y) is a mean of the neighborhood of (x, y) minus C .
@@ -196,11 +196,22 @@ int main( )
 	//namedWindow("【旋转前效果图】",WINDOW_NORMAL);//显示最终效果图
 	//imshow("【旋转前效果图】", midImage);  
 
+	Mat element = getStructuringElement(MORPH_RECT, Size(15, 15));  
+	Mat element2 = getStructuringElement(MORPH_RECT, Size(15, 15));  
+	
+
 	namedWindow("img",WINDOW_NORMAL);//显示最终效果图
 	//setMouseCallback("img",on_mouse,0); 
 	imshow("img", grayImage);  
 
 	waitKey(0);  
+	erode(grayImage,grayImage, element ); 
+	dilate(grayImage,grayImage, element2 );
+	erode(grayImage,grayImage, element ); 
+
+
+	imshow("img", grayImage);  
+	waitKey(0); 
 	////mPoint.push_back(Point(2045,1439)) ;
 	////mPoint.push_back(Point(3206,1492));
 	////首先在图像中鼠标两点选择区域，再按任意键开始计算。
